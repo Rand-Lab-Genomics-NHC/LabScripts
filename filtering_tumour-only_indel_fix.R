@@ -98,7 +98,7 @@ getwd()
 
 
 ## for tumour only data 
-path = "data/RScriptTroubleshoot/vcfs"
+path = "~/data/RScriptTroubleshoot/vcfs"
 file.names <- dir(path, pattern =".tsv")
 file.names
 mt2_to_vcf_mpileup <- NULL
@@ -118,7 +118,7 @@ dim(mt2_to_vcf_mpileup)
 #View(mt2_to_vcf_mpileup)
 
 # mt2_to veps
-path = "data/RScriptTroubleshoot/veps"
+path = "~/data/RScriptTroubleshoot/veps"
 file.names <- dir(path, pattern =".tsv")
 file.names
 mt2_to_vep_mpileup <- NULL
@@ -350,7 +350,7 @@ vcf_vep_mpileup <- mt2_to_vcf_vep_mpileup %>%
 
 View(vcf_vep_mpileup)
 
-write_tsv(vcf_vep_mpileup, file.path("Data/RScriptTroubleshoot/results/",paste0("01_VariantsTable_VCF_VEP_RAW.tsv")))
+write_tsv(vcf_vep_mpileup, file.path("~/Data/RScriptTroubleshoot/results/",paste0("01_VariantsTable_VCF_VEP_RAW.tsv")))
 
 
 # filtering 
@@ -380,7 +380,7 @@ vcf_vep_mpileup_filtered <- vcf_vep_mpileup %>%
 
 head(vcf_vep_mpileup_filtered)
 dim(vcf_vep_mpileup_filtered)
-write_tsv(vcf_vep_mpileup_filtered, file.path("data/rscripttroubleshoot/results/",paste0("02_VariantsTable_WES_Filtered_By_gnomAD.tsv")))
+write_tsv(vcf_vep_mpileup_filtered, file.path("~/data/rscripttroubleshoot/results/",paste0("02_VariantsTable_WES_Filtered_By_gnomAD.tsv")))
 
 
 dim(vcf_vep_mpileup_filtered)
@@ -391,17 +391,17 @@ vcf_vep_mpileup_filtered_silent <- vcf_vep_mpileup_filtered[vcf_vep_mpileup_filt
 ## writing output 
 dim(vcf_vep_mpileup_filtered_nonsyn)
 dim(vcf_vep_mpileup_filtered_silent)
-write_tsv(vcf_vep_mpileup_filtered_nonsyn, file.path("data/rscripttroubleshoot/results/",paste0("03_VariantsTable_WES_Filtered_For_Nonsyn_Only.tsv")))
-write_tsv(vcf_vep_mpileup_filtered_silent, file.path("data/rscripttroubleshoot/results/", paste0("04_VariantsTable_WES_Filtered_For_Silent_Only.tsv")))
+write_tsv(vcf_vep_mpileup_filtered_nonsyn, file.path("~/data/rscripttroubleshoot/results/",paste0("03_VariantsTable_WES_Filtered_For_Nonsyn_Only.tsv")))
+write_tsv(vcf_vep_mpileup_filtered_silent, file.path("~/data/rscripttroubleshoot/results/", paste0("04_VariantsTable_WES_Filtered_For_Silent_Only.tsv")))
 
 #save(vcf_vep_mpileup, vcf_vep_mpileup_silent, vcf_vep_mpileup_nonsyn, file = "mutations.RData")
 
 FLAGS <- c("MUC4","TTN","MUC16","OBSCN","AHNAK2","SYNE1","FLG","MUC5B","DNAH17","PLEC","DST","SYNE2","NEB","HSPG2","LAMA5","AHNAK","HMCN1","USH2A","DNAH11","MACF1","MUC17","DNAH5","GPR98","FAT1","PKD1","MDN1","RNF213","RYR1","DNAH2","DNAH3","DNAH8","DNAH1","DNAH9","ABCA13","SRRM2","CUBN","SPTBN5","PKHD1","LRP2","FBN3","CDH23","DNAH10","FAT4","RYR3","PKHD1L1","FAT2","CSMD1","PCNT","COL6A3","FRAS1","FCGBP","RYR2","HYDIN","XIRP2","LAMA1")
 FLAGS # should display 55 genes
-write_tsv(data.frame(FLAGS), file.path("data/rscripttroubleshoot/results/",paste0("55_Flags.tsv")))
+write_tsv(data.frame(FLAGS), file.path("~/data/rscripttroubleshoot/results/",paste0("55_Flags.tsv")))
 
 #vcf_vep_mpileup_filtered_nonsyn[!vcf_vep_mpileup_filtered_nonsyn$SYMBOL %in% FLAGS,] %>% View()
 vcf_vep_mpileup_filtered_nonsyn_Flags_Filtered <- vcf_vep_mpileup_filtered_nonsyn[!vcf_vep_mpileup_filtered_nonsyn$SYMBOL %in% FLAGS,]
 dim(vcf_vep_mpileup_filtered_nonsyn_Flags_Filtered)
-write_tsv(vcf_vep_mpileup_filtered_nonsyn_Flags_Filtered, file.path("data/rscripttroubleshoot/results/",paste0("05_VariantsTable_WES_Filtered_For_Nonsyn_Flags_Filtered.tsv")))
+write_tsv(vcf_vep_mpileup_filtered_nonsyn_Flags_Filtered, file.path("~/data/rscripttroubleshoot/results/",paste0("05_VariantsTable_WES_Filtered_For_Nonsyn_Flags_Filtered.tsv")))
 
