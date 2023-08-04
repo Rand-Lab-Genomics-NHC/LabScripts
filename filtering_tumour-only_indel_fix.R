@@ -322,40 +322,7 @@ table(mt2_to_vcf_vep_mpileup$VARIANT_CLASS)
 #                                                                                                                                                 if_else(VARIANT_CLASSIFICATION=="3_prime_UTR_variant", "3'UTR",
 #                                                                                                                                                         if_else(VARIANT_CLASSIFICATION=="splice_region_variant","Splice_Region",
 #                                                                                                                                                                 if_else(VARIANT_CLASSIFICATION=="upstream_gene_variant","5'Flank","3'Flank"))))))))))))))))),
-         # GENOME="GRCh37",
-         # FILTER=if_else(is.na(gnomAD_AFR_AF)| is.na(gnomAD_AMR_AF) | is.na(gnomAD_ASJ_AF)| is.na(gnomAD_EAS_AF)| is.na(gnomAD_FIN_AF) | is.na(gnomAD_NFE_AF)| is.na(gnomAD_OTH_AF) | is.na(gnomAD_SAS_AF), "PASS",
-                        # if_else (gnomAD_AFR_AF>0.04 | gnomAD_AMR_AF>0.04 | gnomAD_ASJ_AF>0.04 | gnomAD_EAS_AF>0.04 | gnomAD_FIN_AF>0.04 | gnomAD_NFE_AF>0.04 | gnomAD_OTH_AF>0.04 | gnomAD_SAS_AF>0.04, "common_variant","PASS"))) %>%
-  # select(SAMPLE=sample_name,
-  #        SYMBOL,
-  #        GENOME, 
-  #        CHR=chr,
-  #        START_POS=pos,
-  #        END_POS=pos,
-  #        STRAND,
-  #        VARIANT_CLASSIFICATION,
-  #        VARIANT_TYPE=VARIANT_CLASS,
-  #        REF_ALLELE=ref_allele,
-  #        ALT_ALLELE=alt_allele,
-  #        AA_CHANGE=HGVSp,
-  #        TRANSCRIPT_ID=Feature,
-  #        BIOTYPE,
-  #        SIFT,
-  #        PolyPhen,
-  #        gnomAD_AFR_AF,
-  #        gnomAD_AMR_AF,
-  #        gnomAD_ASJ_AF,
-  #        gnomAD_EAS_AF,
-  #        gnomAD_FIN_AF,
-  #        gnomAD_NFE_AF,
-  #        gnomAD_OTH_AF,
-  #        gnomAD_SAS_AF,
-  #        FILTER,
-  #        TUMOUR_REF_READ=ref_reads,
-  #        TUMOUR_ALT_READ=var_reads,
-  #        TUMOUR_TOTAL_DEPTH=total_depth,
-  #        TUMOUR_VAF=allel_freq)
 
-View(vcf_vep_mpileup)
 
 write_tsv(vcf_vep_mpileup, file.path("~/Data/RScriptTroubleshoot/results/",paste0("01_VariantsTable_VCF_VEP_RAW.tsv")))
 
