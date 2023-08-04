@@ -294,6 +294,13 @@ table(mt2_to_vcf_vep_mpileup$VARIANT_CLASS)
 ### NOTE! The next command removes secondary values in the Consequences/Variant_Classification column with multiple entries. 
 ### e.g. "missense_variant,splice_region_variant" will become "Missense_Mutation" and the splice_region_variant info will be lost. 
 
+# Flow of commands in previous version (uses Tidyverse)
+# create vcf_vep_mpileup from mt2_to_vcf_vep_mpileup after following commands.
+# Mutate two columns.
+# 1.a HGVSp (format e.g. ENSP00000368678.2:p.Leu146ThrfsTer11) to remove everything before the ":" using gsub(".*:","",HGVSp).
+# 1.b HGVSp again to rename any amino acid codings. The original format in the VEP file is for the 3 letter, output format is 1 letter. Also accounts for Xxx and Ter.
+# 2. Creates VARIANT_CLASSIFICATION column and fills it depending on the contents of the Consequence column in mt2_to_vcf_vep_mpileup. However this currently removes all other information in the field, so that any information after the first are just lost. 
+
 # vcf_vep_mpileup <- mt2_to_vcf_vep_mpileup %>%
 #   mutate(HGVSp=gsub(".*:","",HGVSp),
 #          HGVSp=str_replace_all(HGVSp,c("Ala"="A","Arg"="R","Asn"="N","Asp"="D","Asx"="B","Cys"="C","Glu"="E","Gln"="Q","Glx"="Z","Gly"="G","His"="H","Ile"="I","Leu"="L","Lys"="K","Met"="M","Phe"="F","Pro"="P","Ser"="S","Thr"="T","Trp"="W","Tyr"="Y","Val"="V","Xxx"="X","Ter"="*")),
