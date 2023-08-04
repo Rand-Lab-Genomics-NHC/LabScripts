@@ -98,7 +98,7 @@ getwd()
 
 
 ## for tumour only data 
-path = "data/RScriptTroubleshoot/vcfs"
+path = "~/data/RScriptTroubleshoot/vcfs"
 file.names <- dir(path, pattern =".tsv")
 file.names
 mt2_to_vcf_mpileup <- NULL
@@ -118,7 +118,7 @@ dim(mt2_to_vcf_mpileup)
 #View(mt2_to_vcf_mpileup)
 
 # mt2_to veps
-path = "data/RScriptTroubleshoot/veps"
+path = "~/data/RScriptTroubleshoot/veps"
 file.names <- dir(path, pattern =".tsv")
 file.names
 mt2_to_vep_mpileup <- NULL
@@ -173,7 +173,7 @@ mt2_to_vcf_vep_mpileup <- inner_join(mt2_to_vcf_mpileup, mt2_to_vep_mpileup, by=
                                                                          "sample_name"="sample",
                                                                          "ref_allele"="REF_ALLELE",
                                                                          "alt_allele"="Allele"))
-View(mt2_to_vcf_vep_mpileup)
+#View(mt2_to_vcf_vep_mpileup)
 
 # Deal with Indels
 
@@ -322,42 +322,9 @@ table(mt2_to_vcf_vep_mpileup$VARIANT_CLASS)
 #                                                                                                                                                 if_else(VARIANT_CLASSIFICATION=="3_prime_UTR_variant", "3'UTR",
 #                                                                                                                                                         if_else(VARIANT_CLASSIFICATION=="splice_region_variant","Splice_Region",
 #                                                                                                                                                                 if_else(VARIANT_CLASSIFICATION=="upstream_gene_variant","5'Flank","3'Flank"))))))))))))))))),
-#          GENOME="GRCh37",
-#          FILTER=if_else(is.na(gnomAD_AFR_AF)| is.na(gnomAD_AMR_AF) | is.na(gnomAD_ASJ_AF)| is.na(gnomAD_EAS_AF)| is.na(gnomAD_FIN_AF) | is.na(gnomAD_NFE_AF)| is.na(gnomAD_OTH_AF) | is.na(gnomAD_SAS_AF), "PASS",
-#                         if_else (gnomAD_AFR_AF>0.04 | gnomAD_AMR_AF>0.04 | gnomAD_ASJ_AF>0.04 | gnomAD_EAS_AF>0.04 | gnomAD_FIN_AF>0.04 | gnomAD_NFE_AF>0.04 | gnomAD_OTH_AF>0.04 | gnomAD_SAS_AF>0.04, "common_variant","PASS"))) %>%
-#   select(SAMPLE=sample_name,
-#          SYMBOL,
-#          GENOME, 
-#          CHR=chr,
-#          START_POS=pos,
-#          END_POS=pos,
-#          STRAND,
-#          VARIANT_CLASSIFICATION,
-#          VARIANT_TYPE=VARIANT_CLASS,
-#          REF_ALLELE=ref_allele,
-#          ALT_ALLELE=alt_allele,
-#          AA_CHANGE=HGVSp,
-#          TRANSCRIPT_ID=Feature,
-#          BIOTYPE,
-#          SIFT,
-#          PolyPhen,
-#          gnomAD_AFR_AF,
-#          gnomAD_AMR_AF,
-#          gnomAD_ASJ_AF,
-#          gnomAD_EAS_AF,
-#          gnomAD_FIN_AF,
-#          gnomAD_NFE_AF,
-#          gnomAD_OTH_AF,
-#          gnomAD_SAS_AF,
-#          FILTER,
-#          TUMOUR_REF_READ=ref_reads,
-#          TUMOUR_ALT_READ=var_reads,
-#          TUMOUR_TOTAL_DEPTH=total_depth,
-#          TUMOUR_VAF=allel_freq)
 
-#View(vcf_vep_mpileup)
 
-write_tsv(vcf_vep_mpileup, file.path("Data/RScriptTroubleshoot/results/",paste0("01_VariantsTable_VCF_VEP_RAW.tsv")))
+write_tsv(vcf_vep_mpileup, file.path("~/Data/RScriptTroubleshoot/results/",paste0("01_VariantsTable_VCF_VEP_RAW.tsv")))
 
 
 # filtering 
@@ -387,7 +354,7 @@ vcf_vep_mpileup_filtered <- vcf_vep_mpileup %>%
 
 head(vcf_vep_mpileup_filtered)
 dim(vcf_vep_mpileup_filtered)
-write_tsv(vcf_vep_mpileup_filtered, file.path("data/rscripttroubleshoot/results/",paste0("02_VariantsTable_WES_Filtered_By_gnomAD.tsv")))
+write_tsv(vcf_vep_mpileup_filtered, file.path("~/data/rscripttroubleshoot/results/",paste0("02_VariantsTable_WES_Filtered_By_gnomAD.tsv")))
 
 
 dim(vcf_vep_mpileup_filtered)
@@ -398,17 +365,17 @@ vcf_vep_mpileup_filtered_silent <- vcf_vep_mpileup_filtered[vcf_vep_mpileup_filt
 ## writing output 
 dim(vcf_vep_mpileup_filtered_nonsyn)
 dim(vcf_vep_mpileup_filtered_silent)
-write_tsv(vcf_vep_mpileup_filtered_nonsyn, file.path("data/rscripttroubleshoot/results/",paste0("03_VariantsTable_WES_Filtered_For_Nonsyn_Only.tsv")))
-write_tsv(vcf_vep_mpileup_filtered_silent, file.path("data/rscripttroubleshoot/results/", paste0("04_VariantsTable_WES_Filtered_For_Silent_Only.tsv")))
+write_tsv(vcf_vep_mpileup_filtered_nonsyn, file.path("~/data/rscripttroubleshoot/results/",paste0("03_VariantsTable_WES_Filtered_For_Nonsyn_Only.tsv")))
+write_tsv(vcf_vep_mpileup_filtered_silent, file.path("~/data/rscripttroubleshoot/results/", paste0("04_VariantsTable_WES_Filtered_For_Silent_Only.tsv")))
 
 #save(vcf_vep_mpileup, vcf_vep_mpileup_silent, vcf_vep_mpileup_nonsyn, file = "mutations.RData")
 
 FLAGS <- c("MUC4","TTN","MUC16","OBSCN","AHNAK2","SYNE1","FLG","MUC5B","DNAH17","PLEC","DST","SYNE2","NEB","HSPG2","LAMA5","AHNAK","HMCN1","USH2A","DNAH11","MACF1","MUC17","DNAH5","GPR98","FAT1","PKD1","MDN1","RNF213","RYR1","DNAH2","DNAH3","DNAH8","DNAH1","DNAH9","ABCA13","SRRM2","CUBN","SPTBN5","PKHD1","LRP2","FBN3","CDH23","DNAH10","FAT4","RYR3","PKHD1L1","FAT2","CSMD1","PCNT","COL6A3","FRAS1","FCGBP","RYR2","HYDIN","XIRP2","LAMA1")
 FLAGS # should display 55 genes
-write_tsv(data.frame(FLAGS), file.path("data/rscripttroubleshoot/results/",paste0("55_Flags.tsv")))
+write_tsv(data.frame(FLAGS), file.path("~/data/rscripttroubleshoot/results/",paste0("55_Flags.tsv")))
 
 #vcf_vep_mpileup_filtered_nonsyn[!vcf_vep_mpileup_filtered_nonsyn$SYMBOL %in% FLAGS,] %>% View()
 vcf_vep_mpileup_filtered_nonsyn_Flags_Filtered <- vcf_vep_mpileup_filtered_nonsyn[!vcf_vep_mpileup_filtered_nonsyn$SYMBOL %in% FLAGS,]
 dim(vcf_vep_mpileup_filtered_nonsyn_Flags_Filtered)
-write_tsv(vcf_vep_mpileup_filtered_nonsyn_Flags_Filtered, file.path("data/rscripttroubleshoot/results/",paste0("05_VariantsTable_WES_Filtered_For_Nonsyn_Flags_Filtered.tsv")))
+write_tsv(vcf_vep_mpileup_filtered_nonsyn_Flags_Filtered, file.path("~/data/rscripttroubleshoot/results/",paste0("05_VariantsTable_WES_Filtered_For_Nonsyn_Flags_Filtered.tsv")))
 
