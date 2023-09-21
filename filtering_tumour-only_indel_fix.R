@@ -91,14 +91,14 @@ getwd()
 #                                                  "alt_allele"="Allele")) %>% View()
 
 #mt2_vcf_vep_mpileup <- inner_join(mt2_vcf_mpileup, mt2_vep_mpileup, by=c("Location"="Location",
-                                                  # "sample_name"="sample",
-                                                  # "ref_allele"="REF_ALLELE",
-                                                  # "alt_allele"="Allele"))
+# "sample_name"="sample",
+# "ref_allele"="REF_ALLELE",
+# "alt_allele"="Allele"))
 #mt2_vcf_vep_mpileup
 
-
+setwd('/Users/u0034370')
 ## for tumour only data 
-path = "~/data/RScriptTroubleshoot/vcfs"
+path = "data/RScriptTroubleshoot/vcfs"
 file.names <- dir(path, pattern =".tsv")
 file.names
 mt2_to_vcf_mpileup <- NULL
@@ -118,7 +118,7 @@ dim(mt2_to_vcf_mpileup)
 #View(mt2_to_vcf_mpileup)
 
 # mt2_to veps
-path = "~/data/RScriptTroubleshoot/veps"
+path = "data/RScriptTroubleshoot/veps"
 file.names <- dir(path, pattern =".tsv")
 file.names
 mt2_to_vep_mpileup <- NULL
@@ -163,16 +163,16 @@ table(mt2_to_vep_mpileup$VARIANT_CLASS) ## Still here!
 
 # combine vcf and vep files information *** NOTE: This will only output SNPs, Indels will be lost due to differences in the Location column.
 x <- inner_join(mt2_to_vcf_mpileup, mt2_to_vep_mpileup, by=c("Location"="Location", ## The locations vary!
-                                                  "sample_name"="sample",
-                                                  "ref_allele"="REF_ALLELE",
-                                                  "alt_allele"="Allele"))
+                                                             "sample_name"="sample",
+                                                             "ref_allele"="REF_ALLELE",
+                                                             "alt_allele"="Allele"))
 
 
 # Combine SNP VCF and VEP
 mt2_to_vcf_vep_mpileup <- inner_join(mt2_to_vcf_mpileup, mt2_to_vep_mpileup, by=c("Location"="Location", 
-                                                                         "sample_name"="sample",
-                                                                         "ref_allele"="REF_ALLELE",
-                                                                         "alt_allele"="Allele"))
+                                                                                  "sample_name"="sample",
+                                                                                  "ref_allele"="REF_ALLELE",
+                                                                                  "alt_allele"="Allele"))
 #View(mt2_to_vcf_vep_mpileup)
 
 # Deal with Indels
@@ -199,22 +199,22 @@ anti_mt2_to_vep_mpileup[c("LocStart","LocEnd")] <- str_split_fixed(anti_mt2_to_v
 # Rejoin attempt 1 - based on location (StartLoc)
 
 fix_mt2_to_vcf_vep_mpileup <- inner_join(anti_mt2_to_vcf_mpileup, anti_mt2_to_vep_mpileup, by=c("Location"="LocStart", 
-                                                                                  "sample_name"="sample",
-                                                                                  "ref_allele"="REF_ALLELE",
-                                                                                  "alt_allele"="Allele"))
+                                                                                                "sample_name"="sample",
+                                                                                                "ref_allele"="REF_ALLELE",
+                                                                                                "alt_allele"="Allele"))
 
 
 # 
 
 antifix_vcf <- anti_join(anti_mt2_to_vcf_mpileup, anti_mt2_to_vep_mpileup, by=c("Location"="LocStart", 
-                                                                                                "sample_name"="sample",
-                                                                                                "ref_allele"="REF_ALLELE",
-                                                                                                "alt_allele"="Allele"))
+                                                                                "sample_name"="sample",
+                                                                                "ref_allele"="REF_ALLELE",
+                                                                                "alt_allele"="Allele"))
 
 antifix_vep <- anti_join(anti_mt2_to_vep_mpileup,anti_mt2_to_vcf_mpileup, by=c("LocStart"="Location", 
-                                                                                "sample"="sample_name",
-                                                                                "REF_ALLELE"="ref_allele",
-                                                                                "Allele"="alt_allele"))
+                                                                               "sample"="sample_name",
+                                                                               "REF_ALLELE"="ref_allele",
+                                                                               "Allele"="alt_allele"))
 
 comp <- cbind(antifix_vcf,antifix_vep$LocStart)
 comp[c('VCFChr', 'VCFLoc')] <- str_split_fixed(comp$Location, ':', 2)
@@ -240,7 +240,7 @@ names(anti2_vcf)[names(anti2_vcf) == 'antifix_vep$LocStart'] <- 'VEPLocationDumm
 anti2_vcf[14307,]
 antifix_vep[14307,]
 antifix2_mt2_to_vcf_vep_mpileup <- inner_join(anti2_vcf, antifix_vep, by=c("VEPLocationDummy"="LocStart", 
-                                                                              "sample_name"="sample"))
+                                                                           "sample_name"="sample"))
 ### Pay close attention to the warning after the previous line! ###
 ### It shows where duplicate rows are found and that indel will need manually checking. ###
 
@@ -301,31 +301,175 @@ table(mt2_to_vcf_vep_mpileup$VARIANT_CLASS)
 # 1.b HGVSp again to rename any amino acid codings. The original format in the VEP file is for the 3 letter, output format is 1 letter. Also accounts for Xxx and Ter.
 # 2. Creates VARIANT_CLASSIFICATION column and fills it depending on the contents of the Consequence column in mt2_to_vcf_vep_mpileup. However this currently removes all other information in the field, so that any information after the first are just lost. 
 
-# vcf_vep_mpileup <- mt2_to_vcf_vep_mpileup %>%
-#   mutate(HGVSp=gsub(".*:","",HGVSp),
-#          HGVSp=str_replace_all(HGVSp,c("Ala"="A","Arg"="R","Asn"="N","Asp"="D","Asx"="B","Cys"="C","Glu"="E","Gln"="Q","Glx"="Z","Gly"="G","His"="H","Ile"="I","Leu"="L","Lys"="K","Met"="M","Phe"="F","Pro"="P","Ser"="S","Thr"="T","Trp"="W","Tyr"="Y","Val"="V","Xxx"="X","Ter"="*")),
-#          VARIANT_CLASSIFICATION=gsub("(.*?),.*","\\1",mt2_to_vcf_vep_mpileup$Consequence),
-#          VARIANT_CLASSIFICATION=if_else(VARIANT_CLASSIFICATION %in% c("missense_variant","coding_sequence_variant","conservative_missense_variant","rare_amino_acid_variant"), "Missense_Mutation",
-#                                         if_else(VARIANT_CLASSIFICATION%in% c("transcript_amplification","intron_variant","INTRAGENIC","intragenic_variant"),"Intron",
-#                                                 if_else(VARIANT_CLASSIFICATION%in% c("splice_acceptor_variant","splice_donor_variant","transcript_ablation","exon_loss_variant"),"Splice_Site",
-#                                                         if_else(VARIANT_CLASSIFICATION %in% c("frameshift_variant","protein_altering_variant") & VARIANT_CLASS=="deletion","Frame_Shift_Del",
-#                                                                 if_else(VARIANT_CLASSIFICATION %in% c("frameshift_variant","protein_altering_variant") & VARIANT_CLASS=="insertion","Frame_Shift_Ins",
-#                                                                         if_else(VARIANT_CLASSIFICATION %in% c("inframe_insertion","disruptive_inframe_insertion","protein_altering_variant") & VARIANT_CLASS=="INS","In_Frame_Ins",
-#                                                                                 if_else(VARIANT_CLASSIFICATION %in% c("inframe_insertion","disruptive_inframe_insertion","protein_altering_variant") & VARIANT_CLASS=="DEL","In_Frame_Del",
-#                                                                                         if_else(VARIANT_CLASSIFICATION %in% c("incomplete_terminal_codon_variant","synonymous_variant","stop_retained_variant","NMD_transcript_variant"),"Silent",
-#                                                                                                 if_else(VARIANT_CLASSIFICATION %in% c("mature_miRNA_variant","exon_variant","non_coding_exon_variant","non_coding_transcript_exon_variant","non_coding_transcript_variant","nc_transcript_variant"),"RNA",
-#                                                                                                         if_else(VARIANT_CLASSIFICATION %in% c("TF_binding_site_variant","regulatory_region_variant","regulatory_region","intergenic_variant","intergenic_region"), "IGR",
-#                                                                                                                 if_else(VARIANT_CLASSIFICATION %in% c("5_prime_UTR_variant","5_prime_UTR_premature_start_codon_gain_variant"),"5'UTR",
-#                                                                                                                         if_else(VARIANT_CLASSIFICATION %in% c("initiator_codon_variant","start_lost"),"Translation_Start_Site",
-#                                                                                                                                 if_else(VARIANT_CLASSIFICATION =="stop_gained", "Nonsense_Mutation",
-#                                                                                                                                         if_else(VARIANT_CLASSIFICATION=="stop_lost","Nonstop_Mutation",
-#                                                                                                                                                 if_else(VARIANT_CLASSIFICATION=="3_prime_UTR_variant", "3'UTR",
-#                                                                                                                                                         if_else(VARIANT_CLASSIFICATION=="splice_region_variant","Splice_Region",
-#                                                                                                                                                                 if_else(VARIANT_CLASSIFICATION=="upstream_gene_variant","5'Flank","3'Flank"))))))))))))))))),
+vcf_vep_mpileup <- mt2_to_vcf_vep_mpileup
+vcf_vep_mpileup$HGVSp 
+vcf_vep_mpileup$HGVSp <- gsub(".*:","",vcf_vep_mpileup$HGVSp)
+
+vcf_vep_mpileup$HGVSp <- str_replace_all(vcf_vep_mpileup$HGVSp,c("Ala"="A","Arg"="R","Asn"="N","Asp"="D","Asx"="B",
+                                                                 "Cys"="C","Glu"="E","Gln"="Q","Glx"="Z","Gly"="G",
+                                                                 "His"="H","Ile"="I","Leu"="L","Lys"="K","Met"="M",
+                                                                 "Phe"="F","Pro"="P","Ser"="S","Thr"="T","Trp"="W",
+                                                                 "Tyr"="Y","Val"="V","Xxx"="X","Ter"="*"))
+
+#Investigate gsub regex. This command removes the multiple consequences which we want to retain.
+x <- gsub("(.*?),.*","\\1",vcf_vep_mpileup$Consequence)
+table(x)
+
+#How many entries can one row have? Max appears to be 4 in this sample. 
+table(vcf_vep_mpileup$Consequence)
+
+cons <- str_split_fixed(vcf_vep_mpileup$Consequence, ",", 4)
+cons <- cbind(cons, vcf_vep_mpileup$VARIANT_CLASS)
+
+#Trying a sub strategy - it'll be a longer command but will work. 
+table(sub("missense_variant","Missense_Mutation",cons))
+
+#Need to include a column for VARIANT_CLASS from vcf_vep_mpileup to differentiate insertaions and deletions. 
+
+#Missense_Mutation
+cons <- sub("missense_variant","Missense_Mutation",cons)
+cons <- sub("coding_sequence_variant","Missense_Mutation",cons)
+cons <- sub("conservative_missense_variant","Missense_Mutation",cons)
+cons <- sub("rare_amino_acid_variant","Missense_Mutation",cons)
+
+#Intron
+cons <- sub("transcript_amplification","Intron",cons)
+cons <- sub("intron_variant","Intron",cons)
+cons <- sub("INTRAGENIC","Intron",cons)
+cons <- sub("intragenic_variant","Intron",cons)
+
+#Splice_Site
+cons <- sub("splice_acceptor_variant","Splice_Site",cons)
+cons <- sub("splice_donor_variant","Splice_Site",cons)
+cons <- sub("transcript_ablation","Splice_Site",cons)
+cons <- sub("exon_loss_variant","Splice_Site",cons)
+
+#Frame Shifts - differentiate between deletions and insertions afterwards? VARIANT_CLASS is retained for this reason.
+## NOTE: "protein_altering_variant" isn't handled by this script as it isn't informative as to whether the event is in frame or not.
+
+cons <- sub("frameshift_variant","Frame_Shift_BLANK",cons)
+#cons <- sub("protein_altering_variant","Frame_Shift_BLANK",cons)
+
+#In Frame Indels - differentiate between deletions and insertions afterwards? VARIANT_CLASS is retained for this reason.
+
+cons <- sub("inframe_insertion","In_Frame_BLANK",cons)
+cons <- sub("disruptive_inframe_insertion","In_Frame_BLANK",cons)
+#cons <- sub("protein_altering_variant","In_Frame_BLANK",cons)
+
+#Silent mutations
+
+cons <- sub("incomplete_terminal_codon_variant","Silent",cons)
+cons <- sub("synonymous_variant","Silent",cons)
+cons <- sub("stop_retained_variant","Silent",cons)
+cons <- sub("NMD_transcript_variant","Silent",cons)
+
+#RNA 
+cons <- sub("mature_miRNA_variant","RNA",cons)
+cons <- sub("exon_variant","RNA",cons)
+cons <- sub("non_coding_exon_variant","RNA",cons)
+cons <- sub("non_coding_transcript_exon_variant","RNA",cons)
+cons <- sub("non_coding_transcript_variant","RNA",cons)
+cons <- sub("nc_transcript_variant","RNA",cons)
+
+#IGR
+cons <- sub("TF_binding_site_variant","IGR",cons)
+cons <- sub("regulatory_region_variant","IGR",cons)
+cons <- sub("regulatory_region","IGR",cons)
+cons <- sub("intergenic_variant","IGR",cons)
+cons <- sub("intergenic_region","IGR",cons)
+
+#5'UTR
+cons <- sub("5_prime_UTR_variant","5'UTR",cons)
+cons <- sub("5_prime_UTR_premature_start_codon_gain_variant","5'UTR",cons)
+
+#Translation Start Site
+cons <- sub("initiator_codon_variant","Translation_Start_Site",cons)
+cons <- sub("start_lost","Translation_Start_Site",cons)
+
+#Nonsense Mutation
+cons <- sub("stop_gained","Nonsense_Mutation",cons)
+
+#Nonstop Mutation
+cons <- sub("stop_lost","Nonstop_Mutation",cons)
+
+#3'UTR
+cons <- sub("3_prime_UTR_variant","3'UTR",cons)
+
+#Splice_Region
+cons <- sub("splice_region_variant","Splice_Region",cons)
+
+#Replace "BLANK" in indels - 2 ("Frame_Shift_BLANK","In_Frame_BLANK") values to become 4 ("Frame_Shift_Del","Frame_Shift_Ins","In_Frame_Ins","In_Frame_Del")
+
+cons <- as.data.frame(cons)
+cons$V1[cons$V1 == "Frame_Shift_BLANK" & cons$V5 == "deletion"] <- "Frame_Shift_Del"
+cons$V2[cons$V2 == "Frame_Shift_BLANK" & cons$V5 == "deletion"] <- "Frame_Shift_Del"
+cons$V3[cons$V3 == "Frame_Shift_BLANK" & cons$V5 == "deletion"] <- "Frame_Shift_Del"
+cons$V4[cons$V4 == "Frame_Shift_BLANK" & cons$V5 == "deletion"] <- "Frame_Shift_Del"
+
+cons$V1[cons$V1 == "Frame_Shift_BLANK" & cons$V5 == "insertion"] <- "Frame_Shift_Ins"
+cons$V2[cons$V2 == "Frame_Shift_BLANK" & cons$V5 == "insertion"] <- "Frame_Shift_Ins"
+cons$V3[cons$V3 == "Frame_Shift_BLANK" & cons$V5 == "insertion"] <- "Frame_Shift_Ins"
+cons$V4[cons$V4 == "Frame_Shift_BLANK" & cons$V5 == "insertion"] <- "Frame_Shift_Ins"
+
+cons$V1[cons$V1 == "In_Frame_BLANK" & cons$V5 == "deletion"] <- "In_Frame_Del"
+cons$V2[cons$V2 == "In_Frame_BLANK" & cons$V5 == "deletion"] <- "In_Frame_Del"
+cons$V3[cons$V3 == "In_Frame_BLANK" & cons$V5 == "deletion"] <- "In_Frame_Del"
+cons$V4[cons$V4 == "In_Frame_BLANK" & cons$V5 == "deletion"] <- "In_Frame_Del"
+
+cons$V1[cons$V1 == "In_Frame_BLANK" & cons$V5 == "insertion"] <- "In_Frame_Ins"
+cons$V2[cons$V2 == "In_Frame_BLANK" & cons$V5 == "insertion"] <- "In_Frame_Ins"
+cons$V3[cons$V3 == "In_Frame_BLANK" & cons$V5 == "insertion"] <- "In_Frame_Ins"
+cons$V4[cons$V4 == "In_Frame_BLANK" & cons$V5 == "insertion"] <- "In_Frame_Ins"
+
+#Tie back together via concatenation
+consDone <- paste(cons$V1,cons$V2,cons$V3,cons$V4, sep=",")
+consDone <- as.data.frame(consDone)
+
+consDone <- gsub("[,]{1,}$","",consDone$consDone)
+vcf_vep_mpileup$VARIANT_CLASSIFICATION <- consDone
+
+### . NOT WORKING AFTER THIS POINT . ###
+
+#The above works to get the columns in place, need to add and edit existing columns (WIP):
+vcf_vep_mpileup <- mutate(vcf_vep_mpileup, GENOME="GRCh37")
+vcf_vep_mpileup <- mutate(vcf_vep_mpileup, FILTER=if_else(is.na(gnomAD_AFR_AF)| is.na(gnomAD_AMR_AF) | is.na(gnomAD_ASJ_AF)| is.na(gnomAD_EAS_AF)| is.na(gnomAD_FIN_AF) | is.na(gnomAD_NFE_AF)| is.na(gnomAD_OTH_AF) | is.na(gnomAD_SAS_AF), "PASS", if_else (gnomAD_AFR_AF>0.04 | gnomAD_AMR_AF>0.04 | gnomAD_ASJ_AF>0.04 | gnomAD_EAS_AF>0.04 | gnomAD_FIN_AF>0.04 | gnomAD_NFE_AF>0.04 | gnomAD_OTH_AF>0.04 | gnomAD_SAS_AF>0.04, "common_variant","PASS")))
+vcf_vep_mpileup <- select(vcf_vep_mpileup, SAMPLE=sample_name,
+                          SYMBOL,
+                          GENOME, 
+                          CHR=chr,
+                          START_POS=pos,
+                          END_POS=pos,
+                          STRAND,
+                          VARIANT_CLASSIFICATION,
+                          VARIANT_TYPE=VARIANT_CLASS,
+                          REF_ALLELE=ref_allele,
+                          ALT_ALLELE=alt_allele,
+                          AA_CHANGE=HGVSp,
+                          TRANSCRIPT_ID=Feature,
+                          BIOTYPE,
+                          SIFT,
+                          PolyPhen,
+                          gnomAD_AFR_AF,
+                          gnomAD_AMR_AF,
+                          gnomAD_ASJ_AF,
+                          gnomAD_EAS_AF,
+                          gnomAD_FIN_AF,
+                          gnomAD_NFE_AF,
+                          gnomAD_OTH_AF,
+                          gnomAD_SAS_AF,
+                          FILTER,
+                          TUMOUR_REF_READ=ref_reads,
+                          TUMOUR_ALT_READ=var_reads,
+                          TUMOUR_TOTAL_DEPTH=total_depth,
+                          TUMOUR_VAF=allel_freq)
+
+#The code above has been rewritten from mzaka's version of the script which reworked the columns to allow filtering. 
+#One issue I have identified so far is that this can result in repeats of some values in the VARIANT_CLASSIFICATION. 
+#This isn't a real issue as far as I can tell so far because it doesn't affect filtering. 
+#The repeats are a result of two different values within mt2_to_vcf_vep_mpileup being replaced with the same new value.
 
 
 write_tsv(vcf_vep_mpileup, file.path("~/Data/RScriptTroubleshoot/results/",paste0("01_VariantsTable_VCF_VEP_RAW.tsv")))
-
 
 # filtering 
 
@@ -354,7 +498,7 @@ vcf_vep_mpileup_filtered <- vcf_vep_mpileup %>%
 
 head(vcf_vep_mpileup_filtered)
 dim(vcf_vep_mpileup_filtered)
-write_tsv(vcf_vep_mpileup_filtered, file.path("~/data/rscripttroubleshoot/results/",paste0("02_VariantsTable_WES_Filtered_By_gnomAD.tsv")))
+write_tsv(vcf_vep_mpileup_filtered, file.path("data/rscripttroubleshoot/results/",paste0("02_VariantsTable_WES_Filtered_By_gnomAD.tsv")))
 
 
 dim(vcf_vep_mpileup_filtered)
@@ -365,17 +509,17 @@ vcf_vep_mpileup_filtered_silent <- vcf_vep_mpileup_filtered[vcf_vep_mpileup_filt
 ## writing output 
 dim(vcf_vep_mpileup_filtered_nonsyn)
 dim(vcf_vep_mpileup_filtered_silent)
-write_tsv(vcf_vep_mpileup_filtered_nonsyn, file.path("~/data/rscripttroubleshoot/results/",paste0("03_VariantsTable_WES_Filtered_For_Nonsyn_Only.tsv")))
-write_tsv(vcf_vep_mpileup_filtered_silent, file.path("~/data/rscripttroubleshoot/results/", paste0("04_VariantsTable_WES_Filtered_For_Silent_Only.tsv")))
+write_tsv(vcf_vep_mpileup_filtered_nonsyn, file.path("data/rscripttroubleshoot/results/",paste0("03_VariantsTable_WES_Filtered_For_Nonsyn_Only.tsv")))
+write_tsv(vcf_vep_mpileup_filtered_silent, file.path("data/rscripttroubleshoot/results/", paste0("04_VariantsTable_WES_Filtered_For_Silent_Only.tsv")))
 
 #save(vcf_vep_mpileup, vcf_vep_mpileup_silent, vcf_vep_mpileup_nonsyn, file = "mutations.RData")
 
 FLAGS <- c("MUC4","TTN","MUC16","OBSCN","AHNAK2","SYNE1","FLG","MUC5B","DNAH17","PLEC","DST","SYNE2","NEB","HSPG2","LAMA5","AHNAK","HMCN1","USH2A","DNAH11","MACF1","MUC17","DNAH5","GPR98","FAT1","PKD1","MDN1","RNF213","RYR1","DNAH2","DNAH3","DNAH8","DNAH1","DNAH9","ABCA13","SRRM2","CUBN","SPTBN5","PKHD1","LRP2","FBN3","CDH23","DNAH10","FAT4","RYR3","PKHD1L1","FAT2","CSMD1","PCNT","COL6A3","FRAS1","FCGBP","RYR2","HYDIN","XIRP2","LAMA1")
 FLAGS # should display 55 genes
-write_tsv(data.frame(FLAGS), file.path("~/data/rscripttroubleshoot/results/",paste0("55_Flags.tsv")))
+write_tsv(data.frame(FLAGS), file.path("data/rscripttroubleshoot/results/",paste0("55_Flags.tsv")))
 
 #vcf_vep_mpileup_filtered_nonsyn[!vcf_vep_mpileup_filtered_nonsyn$SYMBOL %in% FLAGS,] %>% View()
 vcf_vep_mpileup_filtered_nonsyn_Flags_Filtered <- vcf_vep_mpileup_filtered_nonsyn[!vcf_vep_mpileup_filtered_nonsyn$SYMBOL %in% FLAGS,]
 dim(vcf_vep_mpileup_filtered_nonsyn_Flags_Filtered)
-write_tsv(vcf_vep_mpileup_filtered_nonsyn_Flags_Filtered, file.path("~/data/rscripttroubleshoot/results/",paste0("05_VariantsTable_WES_Filtered_For_Nonsyn_Flags_Filtered.tsv")))
+write_tsv(vcf_vep_mpileup_filtered_nonsyn_Flags_Filtered, file.path("data/rscripttroubleshoot/results/",paste0("05_VariantsTable_WES_Filtered_For_Nonsyn_Flags_Filtered.tsv")))
 
