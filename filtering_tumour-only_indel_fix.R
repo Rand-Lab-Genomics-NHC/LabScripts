@@ -189,9 +189,9 @@ anti_mt2_to_vcf_mpileup <- anti_join(mt2_to_vcf_mpileup, mt2_to_vep_mpileup, by=
 
 #Check numbers
 
-original_lines <- 227043
-combined_lines <- 184275
-missing_lines <- original_lines - combined_lines
+# original_lines <- 227043
+# combined_lines <- 184275
+# missing_lines <- original_lines - combined_lines
 
 
 anti_mt2_to_vep_mpileup[c("LocStart","LocEnd")] <- str_split_fixed(anti_mt2_to_vep_mpileup$Location, "-", 2)
@@ -237,8 +237,8 @@ table(comp$LocDistance)
 anti2_vcf <- comp
 
 names(anti2_vcf)[names(anti2_vcf) == 'antifix_vep$LocStart'] <- 'VEPLocationDummy'
-anti2_vcf[14307,]
-antifix_vep[14307,]
+#anti2_vcf[14307,]
+#antifix_vep[14307,]
 antifix2_mt2_to_vcf_vep_mpileup <- inner_join(anti2_vcf, antifix_vep, by=c("VEPLocationDummy"="LocStart", 
                                                                            "sample_name"="sample"))
 ### Pay close attention to the warning after the previous line! ###
